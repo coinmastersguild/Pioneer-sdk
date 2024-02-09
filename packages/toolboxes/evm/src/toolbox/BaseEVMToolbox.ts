@@ -281,9 +281,9 @@ const transfer = async (
 const estimateGasPrices = async (provider: Provider, isEIP1559Compatible = true) => {
   try {
     const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } = await provider.getFeeData();
-    //console.log("maxFeePerGas: ", maxFeePerGas);
-    //console.log("maxPriorityFeePerGas: ", maxPriorityFeePerGas);
-    //console.log("gasPrice: ", gasPrice);
+    console.log("maxFeePerGas: ", maxFeePerGas);
+    console.log("maxPriorityFeePerGas: ", maxPriorityFeePerGas);
+    console.log("gasPrice: ", gasPrice);
 
     switch (isEIP1559Compatible) {
       case true:
@@ -299,8 +299,8 @@ const estimateGasPrices = async (provider: Provider, isEIP1559Compatible = true)
             maxPriorityFeePerGas: (maxPriorityFeePerGas * 15n) / 10n,
           },
           [FeeOption.Fastest]: {
-            maxFeePerGas: maxFeePerGas * 2n,
-            maxPriorityFeePerGas: maxPriorityFeePerGas * 2n,
+            maxFeePerGas: maxFeePerGas * 3n,
+            maxPriorityFeePerGas: maxPriorityFeePerGas * 3n,
           },
         };
 
@@ -315,7 +315,7 @@ const estimateGasPrices = async (provider: Provider, isEIP1559Compatible = true)
             gasPrice: (gasPrice * 15n) / 10n,
           },
           [FeeOption.Fastest]: {
-            gasPrice: gasPrice * 2n,
+            gasPrice: gasPrice * 3n,
           },
         };
     }
@@ -396,7 +396,7 @@ const estimateGasLimit = async (
 const sendTransaction = async (
   provider: Provider | BrowserProvider,
   tx: EVMTxParams,
-  feeOptionKey: FeeOption = FeeOption.Fast,
+  feeOptionKey: FeeOption = FeeOption.Fastest,
   signer?: Signer,
   isEIP1559Compatible = true,
 ) => {
@@ -420,7 +420,8 @@ const sendTransaction = async (
   }
 
   const address = from || (await signer.getAddress());
-  const nonce = tx.nonce || (await provider.getTransactionCount(address));
+  let nonce = tx.nonce || (await provider.getTransactionCount(address));
+  // nonce = nonce - 1
   const chainId = (await provider.getNetwork()).chainId;
 
   const isEIP1559 = isEIP1559Transaction(parsedTxObject) || isEIP1559Compatible;
@@ -451,6 +452,8 @@ const sendTransaction = async (
   }
 
   try {
+    console.log("TOOLBOX: feeData: ",feeData)
+
     const txObject = {
       ...parsedTxObject,
       chainId,
@@ -459,7 +462,7 @@ const sendTransaction = async (
       nonce: nonce.toString(),
       ...feeData,
     };
-    //console.log("TOOLBOX: txObject: ",txObject)
+    console.log("TOOLBOX: txObject: ",txObject)
     try {
       const response = await signer.sendTransaction(txObject);
       //console.log("TOOLBOX: response: ",response)

@@ -114,7 +114,10 @@ export class KeepKeySigner extends AbstractSigner {
               'gasPrice' in restTx ? toHexString(BigInt(gasPrice?.toString() || '0')) : undefined, // Fixed syntax error and structure here
           }),
     };
+    console.log("input: ", input);
     const responseSign = await this.sdk.eth.ethSignTransaction(input);
+    console.log("responseSign: ", responseSign);
+    console.log("responseSign: ", responseSign.serialized);
     return responseSign.serialized;
   };
 

@@ -19,6 +19,7 @@
   "dependencies": {
     "@coinmasters/core": "workspace:*",
     "@coinmasters/types": "workspace:^",
+    "@coinmasters/toolbox-evm": "workspace:^",
     "@coinmasters/wallet-keepkey": "workspace:*",
     "@pioneer-platform/loggerdog": "^8.1.31",
     "@types/node": "^20.10.4",
