@@ -119,8 +119,8 @@ importers:
         specifier: ^5.0.8
         version: 5.0.8
       '@pioneer-platform/pioneer-coins':
-        specifier: ^9.2.13
-        version: 9.2.13(@types/node@20.11.16)
+        specifier: ^9.2.14
+        version: 9.2.14(@types/node@20.11.16)
       axios:
         specifier: ^1.6.7
         version: 1.6.7
@@ -7891,6 +7891,17 @@ packages:
 
   /@pioneer-platform/pioneer-coins@9.2.13(@types/node@20.11.16):
     resolution: {integrity: sha512-h8BMZjkQ2KtHU6wF9yuwS+MewO4CocqCRrhXZGwjKpTNML8+6oyz6c2tCA+laNYKqtCmxtPeepM8pdazW1CxHA==}
+    dependencies:
+      '@pioneer-platform/loggerdog': 8.3.1(@types/node@20.11.16)
+      bignumber.js: 9.1.2
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+    dev: false
+
+  /@pioneer-platform/pioneer-coins@9.2.14(@types/node@20.11.16):
+    resolution: {integrity: sha512-uRfn+hi3+AIxYD6hsjBXoxboWqLr4gc/upoiup7BmF1Srz/87ZpQeCAQprnUdRwOCpwR3Ua5XBALJdI344uRlg==}
     dependencies:
       '@pioneer-platform/loggerdog': 8.3.1(@types/node@20.11.16)
       bignumber.js: 9.1.2
