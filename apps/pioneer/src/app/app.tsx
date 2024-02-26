@@ -6,7 +6,7 @@ import Pioneer from './components/Pioneer';
 import Receive from './components/Receive';
 import { useEffect } from 'react';
 export default function App() {
-  const { state, onStart } = usePioneer();
+  const { onStart } = usePioneer();
 
   let onStartApp = async function(){
     try{
