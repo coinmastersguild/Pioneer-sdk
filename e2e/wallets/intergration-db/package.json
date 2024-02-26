@@ -19,6 +19,7 @@
   "dependencies": {
     "@coinmasters/core": "workspace:*",
     "@coinmasters/pioneer-db": "workspace:*",
+    "@coinmasters/types": "workspace:*",
     "@types/node": "^20.10.4",
     "assert": "^2.1.0",
     "dotenv": "^6.2.0",
