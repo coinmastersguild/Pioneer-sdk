@@ -15,7 +15,7 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.8",
-    "@pioneer-platform/pioneer-coins": "^9.2.13",
+    "@pioneer-platform/pioneer-coins": "^9.2.14",
     "axios": "^1.6.7",
     "chart.js": "^4.4.1",
     "framer-motion": "^11.0.3",
