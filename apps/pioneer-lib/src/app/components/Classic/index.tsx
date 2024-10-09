@@ -24,6 +24,8 @@ import {
   ModalBody,
   Badge,
   Link,
+  HStack,
+  Switch,
   useDisclosure,
 } from '@chakra-ui/react';
 import { getPaths } from '@pioneer-platform/pioneer-coins';
@@ -257,6 +259,44 @@ export function Classic({ usePioneer }: any) {
                 </Button>
               </Link>
               <Image src={'https://i.ibb.co/jR8WcJM/kk.gif'} alt="KeepKey" />
+            </VStack>
+            <VStack spacing={4} align="stretch">
+              {/* Heading for Enable Masking */}
+              <Text fontSize="md" fontWeight="bold">
+                Enable Masking
+              </Text>
+
+              {/* Toggle for Firefox */}
+              <HStack w="100%" justifyContent="space-between">
+                <HStack>
+                  <Avatar size="md" name="Firefox" src="https://forum.zeroqode.com/uploads/default/original/2X/4/401498d7adfbb383fea695394f4f653ea4e7c9a7.png" />
+                  <Text>Enable Firefox</Text>
+                </HStack>
+                <Switch size="md" />
+              </HStack>
+
+              {/* Toggle for XDEFI Keplr */}
+              <HStack w="100%" justifyContent="space-between">
+                <HStack>
+                  <Avatar size="md" name="XDEFI" src="https://images.crunchbase.com/image/upload/c_pad,f_auto,q_auto:eco,dpr_1/cs5s7reskl2onltpd7gw" />
+                  <Text>Enable XDEFI</Text>
+                </HStack>
+                <Switch size="md" />
+              </HStack>
+
+              {/* Toggle for XDEFI Keplr */}
+              <HStack w="100%" justifyContent="space-between">
+                <HStack>
+                  <Avatar size="md" name="Keplr" src="https://cdn.dealspotr.com/io-images/logo/keplr.jpg?fit=contain&trim=true&flatten=true&extend=10&width=500&height=500" />
+                  <Text>Enable Keplr</Text>
+                </HStack>
+                <Switch size="md" />
+              </HStack>
+
+              {/* Warning Text */}
+              <Text fontSize="sm" color="gray.500">
+                This setting may conflict with these apps if also enabled.
+              </Text>
             </VStack>
           </ModalBody>
         </ModalContent>

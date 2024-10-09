@@ -22,9 +22,9 @@ import {
 } from '@pioneer-platform/pioneer-coins';
 
 // let BLOCKCHAIN = 'DOGE'
-// let BLOCKCHAIN = 'BTC'
+let BLOCKCHAIN = 'BTC'
 // let BLOCKCHAIN = 'ETH'
-let BLOCKCHAIN = 'THOR'
+// let BLOCKCHAIN = 'THOR'
 
 const syncWalletByChain = async (keepkey:any, chain:any) => {
     if (!keepkey[chain]) throw Error('Missing chain! chain: ' + chain);
@@ -172,7 +172,7 @@ const test_service = async function (this: any) {
         // @ts-ignore
         function addChain({ chain, walletMethods, wallet }) {
             log.info(`Adding chain: ${chain}`);
-            log.info(`Chain data:`, { chain, walletMethods, wallet });
+            // log.info(`Chain data:`, { chain, walletMethods, wallet });
             keepkey[chain] = {
                 walletMethods,
                 wallet
@@ -180,7 +180,7 @@ const test_service = async function (this: any) {
         }
 
         let keepkeyConfig = {
-          apiKey: 'f74b46ad-592b-4a9a-9941-c99624fefb62',
+          apiKey: 'test123',
           pairingInfo: {
               name: "int-test-package",
               imageUrl: "",
@@ -197,18 +197,18 @@ const test_service = async function (this: any) {
             addChain,
             config: { keepkeyConfig, covalentApiKey, ethplorerApiKey, utxoApiKey },
         }
-        // let chains =  [
-        //     BLOCKCHAIN
-        // ]
-
         let chains =  [
-            'ARB',  'AVAX',
-            'BSC',  'BTC',  'BCH',
-            'GAIA', 'OSMO', 'XRP',
-            'DOGE', 'DASH', 'ETH',
-            'LTC',  'OP',   'MATIC',
-            'THOR'
+            BLOCKCHAIN
         ]
+
+        // let chains =  [
+        //     'ARB',  'AVAX',
+        //     'BSC',  'BTC',  'BCH',
+        //     'GAIA', 'OSMO', 'XRP',
+        //     'DOGE', 'DASH', 'ETH',
+        //     'LTC',  'OP',   'MATIC',
+        //     'THOR'
+        // ]
 
         // Step 1: Invoke the outer function with the input object
         const connectFunction = walletKeepKey.wallet.connect(input);
@@ -232,10 +232,10 @@ const test_service = async function (this: any) {
             keepkey[chain].wallet.balance = walletData.balance
         }
         log.info(tag,"keepkey: ",keepkey)
-        //
+
         // let address = await keepkey['ETH'].walletMethods.getAddress()
         // log.info("address: ",address)
-        //
+
         //validate all the balances
         let allChains = Object.keys(keepkey)
         for(let i = 0; i < allChains.length; i++) {

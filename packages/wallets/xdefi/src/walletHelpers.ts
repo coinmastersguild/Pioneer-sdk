@@ -33,8 +33,6 @@ const getXDEFIProvider = (chain: Chain) => {
     case Chain.Optimism:
     case Chain.Polygon:
       return window.xfi?.ethereum;
-    case Chain.Binance:
-      return window.xfi?.binance;
     case Chain.Bitcoin:
       return window.xfi?.bitcoin;
     case Chain.BitcoinCash:

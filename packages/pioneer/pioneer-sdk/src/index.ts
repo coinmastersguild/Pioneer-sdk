@@ -172,10 +172,11 @@ export class SDK {
   public getAssets: (filter?: string) => Promise<any>;
   public getBalance: (caip: string, pubkeys: any, nodes: any) => Promise<any>;
   public getCharts: () => Promise<any>;
+  public keepKeySdk: any;
   constructor(spec: string, config: PioneerSDKConfig) {
     this.status = 'preInit';
-    this.appName = config.appName;
-    this.appIcon = config.appIcon;
+    this.appName = config.appName || 'unknown app';
+    this.appIcon = config.appIcon || 'https://pioneers.dev/coins/keepkey.png';
     // this.spec = spec || config.spec || 'http://127.0.0.1:9001/spec/swagger.json';
     this.spec = spec || config.spec || 'https://pioneers.dev/spec/swagger';
     this.wss = config.wss || 'wss://pioneers.dev';
@@ -521,16 +522,17 @@ export class SDK {
             //console.log(tag, 'this.blockchains: ', this.blockchains);
             //console.log(tag, 'this.paths: ', this.paths.length);
             // eslint-disable-next-line no-case-declarations
-            let { keepkeyApiKey, info } =
+            let { keepkeyApiKey, info, keepKeySdk } =
               (await (this.swapKit as any)[walletSelected.wallet.connectMethodName](
                 ChainsConfigured,
                 this.paths,
               )) || '';
             this.keepkeyApiKey = keepkeyApiKey;
+            this.keepKeySdk = keepKeySdk;
             this.context = 'keepkey:' + info.label + '.json';
-            //console.log(tag, 'info: ', info);
-            //console.log(tag, 'this.context: ', this.context);
-            //console.log(tag, 'this.keepkeyApiKey: ', this.keepkeyApiKey);
+            console.log(tag, 'info: ', info);
+            console.log(tag, 'this.context: ', this.context);
+            console.log(tag, 'this.keepkeyApiKey: ', this.keepkeyApiKey);
             resultPair = 'success';
             break;
           case 'WALLETCONNECT':
@@ -680,14 +682,14 @@ export class SDK {
     this.getAssets = async function (filterParams?: any) {
       try {
         const tag = `${TAG} | getAssets | `;
-        //console.log(tag, 'filterParams: ', filterParams);
+        console.log(tag, 'filterParams: ', filterParams);
         //Array.from(this.assetsMap.values())
         if (
           !this.assetsMap ||
           Array.from(this.assetsMap.values()).length === 0 ||
           (filterParams && !filterParams.onlyOwned)
         ) {
-          //console.log('No cached assets, loading...');
+          console.log('No cached assets, loading...');
           let tokenMap = new Map();
           let chains = new Set();
           let chainTokenCounts = {};
@@ -710,7 +712,7 @@ export class SDK {
                   assetData[expandedInfo.caip] || assetData[expandedInfo.caip.toLowerCase()];
                 if (assetInfo) {
                   let combinedInfo = { ...expandedInfo, ...assetInfo, integrations: [] }; // Prepare integration array
-                  // console.log(tag, 'combinedInfo: ', combinedInfo);
+                  console.log(tag, 'combinedInfo: ', combinedInfo.networkId);
                   if (
                     this.blockchains.includes(combinedInfo.networkId) ||
                     (filterParams && !filterParams.onlyOwned)
@@ -725,8 +727,8 @@ export class SDK {
                     tokenMap.set(assetInfoKey, combinedInfo);
                     allAssets.push(combinedInfo);
                   } else {
-                    // console.error('***  Skipping token: ', token);
-                    // console.error('***  Not in supported blockchains: ', this.blockchains);
+                    console.error('***  Skipping token: ', token.networkId);
+                    console.error('***  Not in supported blockchains: ', this.blockchains);
                   }
                 } else {
                   //TODO deal witht this at some point, generate caips on a the fly?
@@ -755,30 +757,36 @@ export class SDK {
             // PangolinList,
           ];
           let tokenLists = [...tokenAssets, ...primaryAssets];
+          console.log(tag, 'tokenLists: ', tokenLists.length);
           tokenLists.forEach((list: any) => addTokens(list.tokens, list.name));
 
+          //get custom tokens from db
+
+          //add to map
+
           // Get integration support by asset and enrich the token map with this data
-          if (this.pioneer) {
-            let integrationSupport = await this.pioneer.SupportByAsset();
-            integrationSupport = integrationSupport.data || {};
-            //console.log('integrationSupport: ', integrationSupport);
+          //TODO is this really needed? cant it be app side?
+          // if (this.pioneer) {
+          //   let integrationSupport = await this.pioneer.SupportByAsset();
+          //   integrationSupport = integrationSupport.data || {};
+          //   //console.log('integrationSupport: ', integrationSupport);
+          //
+          //   // Enrich tokenMap directly with integration support
+          //   Object.keys(integrationSupport).forEach((key) => {
+          //     integrationSupport[key].forEach((id) => {
+          //       if (id) {
+          //         let asset = tokenMap.get(id.toLowerCase());
+          //         if (asset) {
+          //           if (MEMOLESS_INTERGRATIONS.indexOf(key) > -1) asset.memoless = true;
+          //           asset.integrations.push(key);
+          //         }
+          //       }
+          //     });
+          //   });
+          // }
 
-            // Enrich tokenMap directly with integration support
-            Object.keys(integrationSupport).forEach((key) => {
-              integrationSupport[key].forEach((id) => {
-                if (id) {
-                  let asset = tokenMap.get(id.toLowerCase());
-                  if (asset) {
-                    if (MEMOLESS_INTERGRATIONS.indexOf(key) > -1) asset.memoless = true;
-                    asset.integrations.push(key);
-                  }
-                }
-              });
-            });
-          }
-
-          //console.log('tokenMap: ', Object.keys(tokenMap).length);
-          //console.log('Processed Assets: ', allAssets.length);
+          console.log('tokenMap: ', Object.keys(tokenMap).length);
+          console.log('Processed Assets: ', allAssets.length);
           //filter assets for blockchain
           this.assetsMap = tokenMap; // Update the main map to include all enriched assets
           this.events.emit('SET_ASSETS', this.assetsMap);
@@ -1368,41 +1376,166 @@ export class SDK {
     this.setAssetContext = async function (asset?: any) {
       const tag = `${TAG} | setAssetContext | `;
       try {
-        //accept null
+        let output: any = { success: false, message: 'Failed to set asset context!' };
+        // Accept null
         if (!asset) {
           this.assetContext = null;
           return;
         }
-        if (!asset.caip) throw Error('Invalid Asset! missing caip!');
-        let assetInfo = this.assetsMap.get(asset.caip.toLowerCase());
-        if (!assetInfo) throw Error('Invalid Asset! not found in assetsMap! caip: ' + asset.caip);
-        //console.log(tag, 'assetInfo: ', assetInfo);
 
-        //find related pubkeys
+        if (!asset.caip) throw Error('Invalid Asset! missing caip!');
+
+        // Try to find the asset in the local assetsMap
+        let assetInfo = this.assetsMap.get(asset.caip.toLowerCase());
+
+        // If the asset is not found, create a placeholder object
+        if (!assetInfo) {
+          console.log(tag, 'Discovery!: ', asset);
+
+          // Attempt to get the asset from Pioneer (or any external source)
+          let pioneerAssetInfo = await this.pioneer.AssetByCaip({ caip: asset.caip });
+          assetInfo = pioneerAssetInfo?.data?.length > 0 ? pioneerAssetInfo.data[0] : null;
+
+          if (!assetInfo) {
+            // Create a placeholder asset if it's not found in Pioneer or locally
+            assetInfo = {
+              chain: asset.chain || asset.name || 'Unknown Chain',
+              identifier: asset.identifier || asset.name || 'UNKNOWN.ASSET',
+              decimals: asset.decimals || 18,
+              type: asset.caip.includes('eip155') ? 'evm' : asset.type || 'unknown',
+              networkId: asset.caip.split('/')[0],
+              caip: asset.caip,
+              symbol: asset.symbol || 'UNKNOWN',
+              sourceList: asset.sourceList || 'placeholder',
+              assetId: asset.assetId || asset.caip,
+              chainId: asset.chainId || asset.caip.split('/')[0],
+              name: asset.name || 'Unknown Asset',
+              networkName: asset.networkName || 'Unknown Network',
+              precision: asset.precision || 18,
+              color: asset.color || '#000000',
+              icon: asset.icon || 'https://pioneers.dev/coins/ethereum.png',
+              explorer: asset.explorer || '', // Fill with blank if unknown
+              explorerAddressLink: asset.explorerAddressLink || asset.explorer + '/address/', // Fill in the explorer link if available
+              explorerTxLink: asset.explorerTxLink || asset.explorer + '/tx/', // Fill in transaction explorer link if available
+              relatedAssetKey: asset.caip,
+              integrations: [],
+              providers: asset.providers,
+              pubkeys: [], // Set later
+              balances: [], // Set later
+              infoCoincap: {}, // Empty for now, can be set later
+              infoCoingecko: {}, // Empty for now, can be set later
+              priceUsd: asset.priceUsd || 0, // Default to 0 if no data
+            };
+            //TODO: Add asset to discovery
+            // try {
+            //   this.pioneer.AddAssetToDiscovery(assetInfo);
+            // } catch (e) {
+            //   console.error(tag, 'Error adding asset to discovery: ', e);
+            // }
+            // Add asset to assetsMap and DB if it's missing
+            this.assetsMap.set(asset.caip.toLowerCase(), assetInfo);
+            output = { success: true, message: 'Asset added to discovery!', discovery: true };
+          }
+          this.events.emit('ADD_ASSET_DISCOVERY', assetInfo);
+          console.log(tag, 'Asset info (placeholder if missing):', assetInfo);
+        }
+
+        // Find related pubkeys
         let networkId = assetInfo.networkId;
         if (networkId.includes('eip155')) networkId = 'eip155:*';
         let pubkeys = this.pubkeys.filter((e: any) => e.networks.includes(networkId));
         assetInfo.pubkeys = pubkeys;
 
-        //find related nodes
+        //
+        if (networkId.includes('eip155')) {
+          //get providers for caip
+          let chainId = asset.caip.split('/')[0].split(':')[1]; // This will get the "1" or "123" part of "eip155:1/slip44:60"
+          console.log(tag, 'chainId: ', chainId);
+          try {
+            let providers = await this.pioneer.GetEvmNode({chainId});
+            assetInfo.providers = providers?.data?.network;
+          } catch (e) {
+            console.error('Missing providers for chainId: ', chainId);
+          }
+        }
+
+        // Find related balances
         let balances = this.balances.filter((b: any) => b.caip === assetInfo.caip);
         assetInfo.balances = balances;
 
-        //get marketInfo for asset
-        let priceData = await this.pioneer.MarketInfo({
-          caip: assetInfo.caip.toLowerCase(),
-        });
-        priceData = priceData.data;
-        assetInfo = { ...assetInfo, ...priceData };
+        try {
+          // Get marketInfo for asset, optional: can skip if market info is not needed
+          let priceData = await this.pioneer.MarketInfo({
+            caip: assetInfo.caip.toLowerCase(),
+          });
+          priceData = priceData?.data || {};
+          assetInfo = { ...assetInfo, ...priceData };
+        } catch (e) {
+          console.error(tag, 'Error getting market info: ', e);
+        }
 
+        console.log(tag, 'Final assetInfo: ', assetInfo);
         this.events.emit('SET_ASSET_CONTEXT', assetInfo);
         this.assetContext = assetInfo;
-        return { success: true };
+        output = { success: true, message: 'Asset context set!', asset: assetInfo };
+        return output;
       } catch (e) {
         console.error(tag, 'e: ', e);
         throw e;
       }
     };
+    // this.setAssetContext = async function (asset?: any) {
+    //   const tag = `${TAG} | setAssetContext | `;
+    //   try {
+    //     //accept null
+    //     if (!asset) {
+    //       this.assetContext = null;
+    //       return;
+    //     }
+    //     if (!asset.caip) throw Error('Invalid Asset! missing caip!');
+    //     let assetInfo = this.assetsMap.get(asset.caip.toLowerCase());
+    //     if (!assetInfo) {
+    //       console.log(tag, 'Discovery!: ', asset);
+    //       //get asset from pioneer
+    //       let assetInfo = await this.pioneer.AssetByCaip({ caip: asset.caip });
+    //       console.log(tag, assetInfo.data);
+    //       if (assetInfo.data.length === 0) {
+    //       }
+    //
+    //       //if missing add to pioneer
+    //       //add to local assetsMap
+    //       //add to db
+    //       //TODO Query Pioneer for asset info
+    //       //throw Error('Invalid Asset! not found in assetsMap! caip: ' + asset.caip);
+    //     }
+    //     //console.log(tag, 'assetInfo: ', assetInfo);
+    //
+    //     //find related pubkeys
+    //     let networkId = assetInfo.networkId;
+    //     if (networkId.includes('eip155')) networkId = 'eip155:*';
+    //     let pubkeys = this.pubkeys.filter((e: any) => e.networks.includes(networkId));
+    //     assetInfo.pubkeys = pubkeys;
+    //
+    //     //find related nodes
+    //     let balances = this.balances.filter((b: any) => b.caip === assetInfo.caip);
+    //     assetInfo.balances = balances;
+    //
+    //     //get marketInfo for asset
+    //     let priceData = await this.pioneer.MarketInfo({
+    //       caip: assetInfo.caip.toLowerCase(),
+    //     });
+    //     priceData = priceData.data;
+    //     assetInfo = { ...assetInfo, ...priceData };
+    //
+    //     console.log(tag, 'assetInfo: ', assetInfo);
+    //     this.events.emit('SET_ASSET_CONTEXT', assetInfo);
+    //     this.assetContext = assetInfo;
+    //     return { success: true };
+    //   } catch (e) {
+    //     console.error(tag, 'e: ', e);
+    //     throw e;
+    //   }
+    // };
     this.setOutboundAssetContext = async function (asset?: any) {
       const tag = `${TAG} | setOutputAssetContext | `;
       try {

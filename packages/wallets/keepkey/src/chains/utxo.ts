@@ -14,7 +14,6 @@ import {
 import type { UTXOChain } from '@coinmasters/types';
 import { Chain, DerivationPath, FeeOption } from '@coinmasters/types';
 import { xpubConvert } from '@pioneer-platform/pioneer-coins';
-import { toCashAddress } from 'bchaddrjs';
 import type { Psbt } from 'bitcoinjs-lib';
 
 import { bip32ToAddressNList, ChainToKeepKeyName } from '../helpers/coins.ts';
@@ -98,13 +97,13 @@ export const utxoWalletMethods = async ({
       script_type: scriptType,
       address_n: bip32ToAddressNList(DerivationPath[chain]),
     };
-    console.log(tag, 'customAddressInfo: ', customAddressInfo);
-    console.log(tag, 'defaultAddressInfo: ', defaultAddressInfo);
+    // console.log(tag, 'customAddressInfo: ', customAddressInfo);
+    // console.log(tag, 'defaultAddressInfo: ', defaultAddressInfo);
     const addressInfo = customAddressInfo || defaultAddressInfo;
-    console.log(tag, 'addressInfo: ', addressInfo.coin);
-    console.log(tag, 'addressInfo: ', addressInfo.script_type);
+    // console.log(tag, 'addressInfo: ', addressInfo.coin);
+    // console.log(tag, 'addressInfo: ', addressInfo.script_type);
     const { address: walletAddress } = await sdk.address.utxoGetAddress(addressInfo);
-    console.log(tag, 'walletAddress: ', walletAddress);
+    // console.log(tag, 'walletAddress: ', walletAddress);
     return walletAddress as string;
   };
 
@@ -112,9 +111,9 @@ export const utxoWalletMethods = async ({
   const _getPubkeys = async (paths: any) => {
     let tag = TAG + ' | _getPubkeys | ';
     try {
-      //console.log(tag, 'Checkpoint 1');
-      if (!paths || !paths.length) return [];
-      console.time('getPubkeys Duration' + chain); // Starts the timer
+      console.log(tag, 'Checkpoint 1');
+      if (!paths || !paths.length) throw Error('Unable to get paths for pubkeys');
+      // console.time('getPubkeys Duration' + chain); // Starts the timer
       let pubkeys = await Promise.all(
         paths.map(async (path: any) => {
           if (!path.addressNList) throw new Error('addressNList not found in path: FATAL');
@@ -199,7 +198,7 @@ export const utxoWalletMethods = async ({
         let outputAddress = address;
 
         if (chain === Chain.BitcoinCash && address) {
-          outputAddress = toCashAddress(address);
+          outputAddress = toCnashAddress(address);
           // outputAddress = (toolbox as ReturnType<typeof BCHToolbox>).stripPrefix(address);
         }
 
@@ -247,7 +246,7 @@ export const utxoWalletMethods = async ({
         locktime: 0,
         opReturnData: memo,
       };
-      //console.log('signPayload: ', JSON.stringify(signPayload));
+      console.log('signPayload: ', JSON.stringify(signPayload));
       const responseSign = await sdk.utxo.utxoSignTransaction(signPayload);
       //console.log('responseSign: ', responseSign);
       return responseSign.serializedTx;
@@ -265,7 +264,6 @@ export const utxoWalletMethods = async ({
     memo,
     ...rest
   }: UTXOTransferParams) => {
-    if (!from) throw new Error('From address must be provided');
     if (!recipient) throw new Error('Recipient address must be provided');
     const tag = TAG + ' | transfer | ';
     try {
@@ -313,94 +311,129 @@ export const utxoWalletMethods = async ({
     }
   };
 
-  // const transfer = async ({
-  //   from,
-  //   recipient,
-  //   feeOptionKey,
-  //   feeRate,
-  //   memo,
-  //   ...rest
-  // }: UTXOTransferParams) => {
-  //   if (!from) throw new Error('From address must be provided');
-  //   if (!recipient) throw new Error('Recipient address must be provided');
-  //   const tag = TAG + ' | transfer | ';
-  //   try {
-  //     const { psbt, inputs: rawInputs } = await toolbox.buildTx({
-  //       ...rest,
-  //       pubkeys: await getPubkeys(paths),
-  //       memo,
-  //       feeOptionKey,
-  //       recipient,
-  //       feeRate: feeRate || (await toolbox.getFeeRates())[feeOptionKey || FeeOption.Fast],
-  //       sender: from,
-  //       fetchTxHex: chain,
-  //     });
-  //
-  //     console.log(tag, 'rawInputs: ', rawInputs);
-  //     const inputs = rawInputs.map(({ value, index, hash, txHex, path, scriptType }) => ({
-  //       addressNList: bip32ToAddressNList(path),
-  //       scriptType: scriptType === 'p2sh' ? 'p2wpkh' : scriptType || 'p2pkh',
-  //       amount: value.toString(),
-  //       vout: index,
-  //       txid: hash,
-  //       hex: txHex || '',
-  //     }));
-  //
-  //     console.log(tag, 'transfer inputs: ', inputs);
-  //     const txHex = await signTransaction(psbt, inputs, memo);
-  //     console.log(tag, 'txHex: ', txHex);
-  //     return await toolbox.broadcastTx(txHex);
-  //   } catch (error: any) {
-  //     console.error('Transfer error:', error);
-  //     throw new Error('Transfer transaction failed');
-  //   }
-  // };
+  function transformInput(input) {
+    const {
+      txid,
+      vout,
+      value,
+      address,
+      height,
+      confirmations,
+      path,
+      scriptType,
+      hex: txHex,
+      tx,
+      coin,
+      network,
+    } = input;
 
-  // const transfer = async ({
-  //   from,
-  //   recipient,
-  //   feeOptionKey,
-  //   feeRate,
-  //   memo,
-  //   ...rest
-  // }: UTXOTransferParams) => {
-  //   if (!from) throw new Error('From address must be provided');
-  //   if (!recipient) throw new Error('Recipient address must be provided');
-  //   //select paths
-  //   console.log("pubkeys: ", pubkeys);
-  //   const { psbt, inputs: rawInputs } = await toolbox.buildTx({
-  //     ...rest,
-  //     pubkeys: await getPubkeys(),
-  //     memo,
-  //     feeOptionKey,
-  //     recipient,
-  //     feeRate: feeRate || (await toolbox.getFeeRates())[feeOptionKey || FeeOption.Fast],
-  //     sender: from,
-  //     fetchTxHex: chain,
-  //   });
-  //   //console.log('rawInputs: ', rawInputs);
-  //   const inputs = rawInputs.map(({ value, index, hash, txHex, path, scriptType }) => ({
-  //     addressNList: bip32ToAddressNList(path),
-  //     // p2sh was showing on native segwit and wrong, replace. If no scriptType, default to p2pkh (non-segwit)
-  //     scriptType: scriptType === 'p2sh' ? 'p2wpkh' : scriptType || 'p2pkh',
-  //     amount: value.toString(),
-  //     vout: index,
-  //     txid: hash,
-  //     hex: txHex || '',
-  //   }));
-  //   //console.log('transfer inputs: ', inputs);
-  //   const txHex = await signTransaction(psbt, inputs, memo);
-  //   //console.log('txHex: ', txHex);
-  //   return toolbox.broadcastTx(txHex);
-  // };
+    return {
+      address,
+      hash: txid,
+      index: vout,
+      value: parseInt(value),
+      height,
+      scriptType,
+      confirmations,
+      path,
+      txHex,
+      tx,
+      coin,
+      network,
+      witnessUtxo: {
+        value: parseInt(tx.vout[0].value),
+        script: Buffer.from(tx.vout[0].scriptPubKey.hex, 'hex'),
+      },
+    };
+  }
 
-  const listUnspent = async (xpub: string) => {
+  const buildTx = async ({ inputs, outputs, memo, changeAddress }: any) => {
+    if (!inputs || !outputs) throw new Error('Missing required fields');
     try {
-      let result = await toolbox.listUnspent(xpub, chain);
+      const uniqueInputSet = new Set();
+      const preparedInputs = inputs
+        .map(transformInput)
+        .filter(({ hash, index }) =>
+          uniqueInputSet.has(`${hash}:${index}`) ? false : uniqueInputSet.add(`${hash}:${index}`),
+        )
+        .map(({ value, index, hash, txHex, path, scriptType }) => ({
+          addressNList: bip32ToAddressNList(path),
+          scriptType: scriptType === 'p2sh' ? 'p2wpkh' : scriptType || 'p2pkh',
+          amount: value.toString(),
+          vout: index,
+          txid: hash,
+          hex: txHex || '',
+        }));
 
-      return result;
+      const preparedOutputs = outputs.map(({ value, address }) =>
+        address
+          ? { address, amount: value.toString(), addressType: 'spend' }
+          : {
+              addressNList: changeAddress.addressNList,
+              scriptType,
+              isChange: true,
+              amount: value,
+              addressType: 'change',
+            },
+      );
+
+      return { inputs: preparedInputs, outputs: preparedOutputs, memo };
+    } catch (error) {
+      console.error('buildTx |', error);
+      throw new Error('Transfer transaction failed');
+    }
+  };
+
+  const signTx = async (inputs: any, outputs: any, memo: string) => {
+    try {
+      let signPayload = {
+        coin: ChainToKeepKeyName[chain],
+        inputs,
+        outputs,
+        version: 1,
+        locktime: 0,
+        opReturnData: memo,
+      };
+      console.log('signPayload: ', JSON.stringify(signPayload));
+      const responseSign = await sdk.utxo.utxoSignTransaction(signPayload);
+      return responseSign.serializedTx;
     } catch (e) {
       console.error();
+    }
+  };
+
+  const broadcastTx = async (txHex: string) => {
+    try {
+      return await toolbox.broadcastTx(txHex);
+    } catch (e) {
+      console.error();
+    }
+  };
+
+  const listUnspent = async (pubkeys: any) => {
+    let tag = TAG + ' | listUnspent | ';
+    try {
+      const unspentPromises = pubkeys.map(async (pubkey: any) => {
+        console.log(tag, 'pubkey: ', pubkey);
+        console.log(tag, 'pubkey.xpub: ', pubkey.xpub);
+
+        // Fetch the result for each pubkey and return it
+        const result = await toolbox.apiClient.listUnspent({ xpub: pubkey, chain });
+        console.log(tag, 'result: ', result);
+        return result; // Return the result so it can be collected by Promise.all
+      });
+
+      // Use Promise.all to resolve all the unspent outputs in parallel
+      const results = await Promise.all(unspentPromises);
+
+      console.log(tag, 'results: ', results);
+
+      // Flatten the results array if necessary
+      const aggregatedResult = results.flat();
+
+      return aggregatedResult;
+    } catch (e) {
+      console.error(tag, 'Error: ', e);
     }
   };
 
@@ -408,9 +441,12 @@ export const utxoWalletMethods = async ({
     ...toolbox,
     getPubkeys,
     listUnspent,
+    signTx,
     // getInputsForPubkey,
     getAddress,
-    signTransaction,
     transfer,
+    buildTx,
+    signTransaction,
+    broadcastTx,
   };
 };

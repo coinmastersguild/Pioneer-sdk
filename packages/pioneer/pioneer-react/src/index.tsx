@@ -573,22 +573,13 @@ export const PioneerProvider = ({ children }: { children: React.ReactNode }): JS
         pubkeys,
         balances,
         // @ts-ignore
-        ethplorerApiKey:
-          // @ts-ignore
-          process.env.NEXT_PUBLIC_ETHPLORER_API_KEY || 'EK-xs8Hj-qG4HbLY-LoAu7',
+        ethplorerApiKey:'EK-xs8Hj-qG4HbLY-LoAu7',
         // @ts-ignore
-        covalentApiKey:
-          // @ts-ignore
-          process.env.NEXT_PUBLIC_COVALENT_API_KEY || 'cqt_rQ6333MVWCVJFVX3DbCCGMVqRH4q',
+        covalentApiKey:'cqt_rQ6333MVWCVJFVX3DbCCGMVqRH4q',
         // @ts-ignore
-        utxoApiKey:
-          process.env.NEXT_PUBLIC_BLOCKCHAIR_API_KEY ||
-          setup?.blockchairApiKey ||
-          'B_s9XK926uwmQSGTDEcZB3vSAmt5t2',
+        utxoApiKey: 'B_s9XK926uwmQSGTDEcZB3vSAmt5t2',
         // @ts-ignore
-        walletConnectProjectId:
-          // @ts-ignore
-          process.env.VITE_WALLET_CONNECT_PROJECT_ID || '18224df5f72924a5f6b3569fbd56ae16',
+        walletConnectProjectId:'18224df5f72924a5f6b3569fbd56ae16',
       };
       if (!configPioneer.utxoApiKey) throw Error('blockchair api key required!');
       const appInit = new SDK(spec, configPioneer);
@@ -596,6 +587,7 @@ export const PioneerProvider = ({ children }: { children: React.ReactNode }): JS
       //console.log(tag, 'appInit: ', appInit);
       //console.log(tag, 'keepkeyApiKey: ', keepkeyApiKey);
       //console.log(tag, 'assetsMap: ', appInit.assetsMap);
+
       //Network actions
       if (appInit.keepkeyApiKey !== keepkeyApiKey) {
         //console.log('SAVING API KEY. ');

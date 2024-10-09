@@ -2034,6 +2034,9 @@ importers:
       assert:
         specifier: ^2.1.0
         version: 2.1.0
+      coinselect:
+        specifier: ^3.1.13
+        version: 3.1.13
       dotenv:
         specifier: ^6.2.0
         version: 6.2.0
@@ -6082,6 +6085,10 @@ packages:
 
   /@coinmasters/types@4.7.56:
     resolution: {integrity: sha512-RroxLR2TuctAoj8j/ePWXYfwBv2eQVvWGmOZvPSkXxt5R82XRwHALNraGSlnJh7mFkF9/48jPcw7xaTvBLUjmQ==}
+    dev: false
+
+  /@coinmasters/types@4.7.69:
+    resolution: {integrity: sha512-mINJin1QLvp8+YY7l/d7KqfjWBGxrDEL+174X5Ud5NjybOPpnDuZbh8kuVmH6moy9jlS01R6APAMzX3G2Jn0SQ==}
 
   /@confio/ics23@0.6.8:
     resolution: {integrity: sha512-wB6uo+3A50m0sW/EWcU64xpV/8wShZ6bMTa7pF8eYsTrSkQA7oLUIJcs/wb8g4y2Oyq701BaGiO6n/ak5WXO1w==}
@@ -9269,7 +9276,7 @@ packages:
     resolution: {integrity: sha512-yR2QxRsPxMQwict54SXB4l5Q33y4zgEv4ikGxwe+fyK/tSasK1lE44NyyhkDtT/5aLSFJ9Y6y2pBU8Ln0BsyCw==}
     dependencies:
       '@coinmasters/tokens': 3.7.41
-      '@coinmasters/types': 4.7.56
+      '@coinmasters/types': 4.7.69
       '@noble/hashes': 1.4.0
       '@pioneer-platform/loggerdog': 8.3.1(@types/node@18.15.13)
       '@types/node': 18.15.13
@@ -10362,11 +10369,13 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@shapeshiftoss/hdwallet-core@1.54.1:
-    resolution: {integrity: sha512-Lqjxxy9dyJaOrpZlmiyaj19uxsmSUXeI/m8CyEgek21Ouj4gBeOLBKGDffjs/cSEj2vIIanIvbhpK0x5bUooPg==}
+  /@shapeshiftoss/hdwallet-core@1.55.9:
+    resolution: {integrity: sha512-pRi/1mgxHx2rH9XdvVPENyADboOYWEvqwgQZ7WYp8OXAvjO4AmGHbx5nHmIK7k5QTHiw1bgZr78SHIHLeH05WQ==}
     dependencies:
+      '@shapeshiftoss/bitcoinjs-lib': 5.2.0-shapeshift.2
       '@shapeshiftoss/proto-tx-builder': 0.8.0
       eip-712: 1.0.0
+      ethers: 6.13.1
       eventemitter2: 5.0.1
       lodash: 4.17.21
       rxjs: 6.6.7
@@ -16957,7 +16966,6 @@ packages:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
-    dev: true
 
   /ethers@6.9.0:
     resolution: {integrity: sha512-pmfNyQzc2mseLe91FnT2vmNaTt8dDzhxZ/xItAV7uGsF4dI4ek2ufMu3rAkgQETL/TIs0GS5A+U05g9QyWnv3Q==}
@@ -23194,7 +23202,7 @@ packages:
       '@bithighlander/bitcoin-cash-js-lib': 5.2.1
       '@pioneer-platform/loggerdog': 8.3.1(@types/node@15.14.9)
       '@pioneer-platform/pioneer-coins': 8.1.90(@types/node@15.14.9)
-      '@shapeshiftoss/hdwallet-core': 1.54.1
+      '@shapeshiftoss/hdwallet-core': 1.55.9
       '@types/node': 15.14.9
       bip39: 3.1.0
       codeclimate-test-reporter: 0.5.1
@@ -25887,7 +25895,6 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-    dev: true
 
   /ws@8.5.0:
     resolution: {integrity: sha512-BWX0SWVgLPzYwF8lTzEy1egjhS4S4OEAHfsO8o65WOVsrnSRGaSiUaa9e0ggGlkMTtBlmOpEXiie9RUcBO86qg==}

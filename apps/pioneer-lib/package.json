@@ -1,6 +1,6 @@
 {
   "name": "@coinmasters/pioneer-lib",
-  "version": "0.1.72",
+  "version": "0.1.81",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@coinmasters/e2e-transfer-dash",
-  "version": "1.7.61",
+  "version": "1.7.70",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {
@@ -27,6 +27,7 @@
     "@pioneer-platform/pioneer-coins": "^9.2.23",
     "@types/node": "^20.10.4",
     "assert": "^2.1.0",
+    "coinselect": "^3.1.13",
     "dotenv": "^6.2.0",
     "typescript": "5.2.2",
     "wait-promise": "^0.4.1"

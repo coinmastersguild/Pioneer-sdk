@@ -1,6 +1,6 @@
 {
   "name": "@coinmasters/tokens",
-  "version": "3.7.61",
+  "version": "3.7.70",
   "author": "swapkit-oss-team",
   "description": "SwapKit Lib tokens",
   "devDependencies": {

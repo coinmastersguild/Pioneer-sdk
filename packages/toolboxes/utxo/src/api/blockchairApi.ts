@@ -1,5 +1,5 @@
-import { RequestClient } from '@pioneer-platform/helpers';
 import { Chain, type UTXOChain } from '@coinmasters/types';
+import { RequestClient } from '@pioneer-platform/helpers';
 
 import type {
   BlockchairAddressResponse,
@@ -10,7 +10,7 @@ import type {
   UTXOType,
 } from '../types/index.ts';
 type BlockchairParams<T> = T & { chain: Chain; apiKey?: string };
-
+const TAG = ' | blockchainApi | ';
 const baseUrl = (chain: Chain) => `https://api.blockchair.com/${mapChainToBlockchairChain(chain)}`;
 const baseUrlPioneer = () => `https://pioneers.dev/api/v1`;
 // const baseUrlPioneer = () => `http://127.0.0.1:9001/api/v1`;
@@ -143,8 +143,12 @@ const getXpubData = async ({ pubkey, chain }: BlockchairParams<{ address?: strin
 };
 
 const listUnspent = async ({ pubkey, chain }: any) => {
+  let tag = TAG + ' | listUnspent | ';
   try {
+    if (!pubkey) throw new Error('pubkey is required');
+    if (!chain) throw new Error('chain is required');
     console.log('listUnspent pubkey: ', pubkey);
+    console.log('listUnspent pubkey: ', chain);
 
     const url = `/listUnspent/${chain}/${pubkey}`;
     //console.log('getXpubData URL: ', url);
@@ -153,6 +157,7 @@ const listUnspent = async ({ pubkey, chain }: any) => {
     //console.log('getXpubData: response: ', response);
     return response;
   } catch (error) {
+    console.error(tag, error);
     return [];
   }
 };

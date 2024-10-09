@@ -149,6 +149,13 @@ const test_service = async function (this: any) {
         //verify pubkeys
 
 
+        const pubkeysBtc = app.pubkeys.filter((e: any) => e.networks.includes(ChainToNetworkId[Chain.BitcoinCash]));
+        const accounts = pubkeysBtc.map((pubkey: any) => pubkey.master || pubkey.address);
+        log.info(tag,"accounts: ",accounts)
+        let changeAddress = accounts[0]
+        //TODO get new change address! no re-use
+        assert(changeAddress)
+
         await app.getBalances()
         log.info(tag,"balances: ",app.balances)
         let balance = app.balances.filter((e:any) => e.symbol === ASSET)
@@ -170,27 +177,57 @@ const test_service = async function (this: any) {
         log.info("pubkeys: ",pubkeys)
 
         //send
-        let estimatePayload:any = {
-            pubkeys,
-            memo: '',
-            recipient: FAUCET_ADDRESS,
-        }
-        log.info("app.swapKit: ",app.swapKit)
-        let maxSpendable = await app.swapKit.estimateMaxSendableAmount({chain:Chain.BitcoinCash, params:estimatePayload})
-        log.info("maxSpendable: ",maxSpendable)
+        // let estimatePayload:any = {
+        //     pubkeys,
+        //     memo: '',
+        //     recipient: FAUCET_ADDRESS,
+        // }
+        // log.info("app.swapKit: ",app.swapKit)
+        // let maxSpendable = await app.swapKit.estimateMaxSendableAmount({chain:Chain.BitcoinCash, params:estimatePayload})
+        // log.info("maxSpendable: ",maxSpendable)
 
         //send
         let sendPayload = {
-            // assetValue,
-            assetValue:maxSpendable,
-            isMax: true,
+            assetValue,
+            from: changeAddress,
+            // assetValue:maxSpendable,
+            // isMax: true,
             memo: '',
             recipient: FAUCET_ADDRESS,
         }
         log.info("sendPayload: ",sendPayload)
-        const txHash = await app.swapKit.transfer(sendPayload);
-        log.info("txHash: ",txHash)
-        assert(txHash)
+
+        const wallet = await app.swapKit.getWallet(Chain.BitcoinCash);
+        // log.info("wallet: ",wallet)
+
+        //buildTx
+        let unsignedTx = await wallet.buildTx(sendPayload)
+        log.info("unsignedTx: ",unsignedTx)
+        assert(unsignedTx)
+        assert(unsignedTx.outputs)
+        assert(unsignedTx.inputs)
+
+        //reviewTx
+
+        //add input
+
+        //remove input
+
+        //adjust output
+
+        //adjust fee
+
+        // signTransaction
+        let signedTx = await wallet.signTransaction(unsignedTx.outputs, unsignedTx.inputs, unsignedTx.memo)
+        log.info("signedTx: ",signedTx)
+
+        //broadcastTx
+        // let txid = await wallet.broadcastTx(signedTx)
+        // log.info("txid: ",txid)
+
+        // const txHash = await app.swapKit.transfer(sendPayload);
+        // log.info("txHash: ",txHash)
+        // assert(txHash)
 
         log.info("************************* TEST PASS *************************")
     } catch (e) {

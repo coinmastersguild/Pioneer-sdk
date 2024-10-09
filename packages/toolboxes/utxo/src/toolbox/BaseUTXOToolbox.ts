@@ -484,8 +484,8 @@ const buildTx = async ({
   let tag = TAG + ' | buildTx | ';
   const compiledMemo = memo ? compileMemo(memo) : null;
 
-  console.log('Checkpoint buildTx');
-  console.log('pubkeys: ', pubkeys);
+  console.log(tag, 'Checkpoint buildTx');
+  console.log(tag, 'pubkeys: ', pubkeys);
 
   const inputsAndOutputs = await getInputsAndTargetOutputs({
     assetValue,

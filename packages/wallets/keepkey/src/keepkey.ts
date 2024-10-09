@@ -25,7 +25,6 @@ export const KEEPKEY_SUPPORTED_CHAINS = [
   Chain.Arbitrum,
   Chain.Avalanche,
   Chain.Base,
-  Chain.Binance,
   Chain.BinanceSmartChain,
   Chain.Bitcoin,
   Chain.BitcoinCash,
@@ -248,8 +247,12 @@ const connectKeepkey =
     config: { keepkeyConfig, covalentApiKey, ethplorerApiKey, utxoApiKey },
   }) =>
   async (chains, paths) => {
+    let tag = 'connectKeepkey';
     if (!keepkeyConfig) throw new Error('KeepKey config not found');
-    // console.log('pubkeys: ', pubkeys.length);
+    if (!keepkeyConfig.pairingInfo.name)
+      throw new Error('KeepKey pairingInfo.name not found and is required');
+    if (!keepkeyConfig.pairingInfo.imageUrl)
+      throw new Error('KeepKey pairingInfo.imageUrl not found and is required');
 
     console.time('Total connectKeepkey time');
 
@@ -259,10 +262,15 @@ const connectKeepkey =
     // console.timeEnd('checkAndLaunch');
 
     if (!paths) paths = [];
+    if (!keepkeyConfig.pairingInfo.name) keepkeyConfig.pairingInfo.name = 'KeepKey';
+    if (!keepkeyConfig.pairingInfo.imageUrl)
+      keepkeyConfig.pairingInfo.imageUrl = 'https://pioneers.dev/coins/keepkey.png';
 
     console.time('KeepKeySdk.create');
+    console.log(tag, 'keepkeyConfig: ', keepkeyConfig);
     const keepKeySdk = await KeepKeySdk.create(keepkeyConfig);
     console.timeEnd('KeepKeySdk.create');
+    console.log('keepKeySdk: ', keepKeySdk);
 
     let features = await keepKeySdk.system.info.getFeatures();
 
@@ -270,9 +278,9 @@ const connectKeepkey =
       if (!chain) return;
 
       const chainLogLabel = `Chain ${chain} processing time`;
-      // console.time(chainLogLabel);
-      //
-      // console.time(`getToolbox for ${chain}`);
+      console.time(chainLogLabel);
+
+      console.time(`getToolbox for ${chain}`);
       const { address, walletMethods } = await getToolbox({
         sdk: keepKeySdk,
         apiClient: apis[chain],
@@ -283,9 +291,9 @@ const connectKeepkey =
         utxoApiKey,
         paths,
       });
-      // console.timeEnd(`getToolbox for ${chain}`);
+      console.timeEnd(`getToolbox for ${chain}`);
 
-      // console.time(`addChain for ${chain}`);
+      console.time(`addChain for ${chain}`);
       addChain({
         chain,
         info: features,
@@ -293,19 +301,19 @@ const connectKeepkey =
         wallet: { address, balance: [], walletType: WalletOption.KEEPKEY },
         keepkeySdk: keepKeySdk,
       });
-      // console.timeEnd(`addChain for ${chain}`);
+      console.timeEnd(`addChain for ${chain}`);
 
-      // console.timeEnd(chainLogLabel);
+      console.timeEnd(chainLogLabel);
     });
 
     // Wait for all the promises to resolve
-    // console.time('Promise.all(chainPromises)');
+    console.time('Promise.all(chainPromises)');
     await Promise.all(chainPromises);
-    // console.timeEnd('Promise.all(chainPromises)');
+    console.timeEnd('Promise.all(chainPromises)');
 
     console.timeEnd('Total connectKeepkey time');
 
-    return { keepkeyApiKey: keepkeyConfig.apiKey, info: features };
+    return { keepkeyApiKey: keepkeyConfig.apiKey, info: features, keepKeySdk };
   };
 
 export const keepkeyWallet = {

@@ -1,6 +1,6 @@
 {
   "name": "@coinmasters/e2e-swap-eth-btc-memoless",
-  "version": "1.7.61",
+  "version": "1.7.70",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {

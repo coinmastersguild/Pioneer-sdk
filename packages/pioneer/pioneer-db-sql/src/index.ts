@@ -35,6 +35,9 @@ export class DB {
     walletIds?: string[];
     blockchains?: string[];
   }) => Promise<any[]>;
+  public addCustomToken: (token: any) => Promise<any>;
+  public getCustomToken: (caip: string) => Promise<any | undefined>;
+  public getAllCustomTokens: () => Promise<any[]>;
 
   constructor(config: any) {
     this.status = 'preInit';
@@ -44,7 +47,6 @@ export class DB {
     this.init = async (setup: any) => {
       const tag = `${TAG} | init | `;
       try {
-        // Browser environment
         if (typeof window !== 'undefined') {
           return new Promise((resolve, reject) => {
             const request = indexedDB.open(this.dbName, 1);
@@ -73,6 +75,11 @@ export class DB {
                 });
                 pubkeyStore.createIndex('ref', 'ref', { unique: true });
               }
+              if (!db.objectStoreNames.contains('customTokens')) {
+                const customTokenStore = db.createObjectStore('customTokens', {
+                  keyPath: 'caip',
+                });
+              }
             };
 
             request.onerror = () => {
@@ -87,9 +94,7 @@ export class DB {
             };
           });
         } else {
-          // Node.js environment
           this.db.serialize(() => {
-            // Create 'transactions' table
             this.db.run(`
           CREATE TABLE IF NOT EXISTS transactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -105,7 +110,6 @@ export class DB {
               }
             });
 
-            // Create 'pubkeys' table
             this.db.run(`
               CREATE TABLE IF NOT EXISTS pubkeys (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -128,7 +132,6 @@ export class DB {
               }
             });
 
-            // Create 'balances' table
             this.db.run(`
           CREATE TABLE IF NOT EXISTS balances (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -174,6 +177,37 @@ export class DB {
                 console.log(tag, 'Balances table created or already exists.');
               }
             });
+
+            this.db.run(`
+          CREATE TABLE IF NOT EXISTS customTokens (
+            caip TEXT PRIMARY KEY,
+            chain TEXT,
+            identifier TEXT,
+            decimals INTEGER,
+            type TEXT,
+            networkId TEXT,
+            symbol TEXT,
+            sourceList TEXT,
+            assetId TEXT,
+            chainId TEXT,
+            name TEXT,
+            networkName TEXT,
+            precision INTEGER,
+            color TEXT,
+            icon TEXT,
+            explorer TEXT,
+            explorerAddressLink TEXT,
+            explorerTxLink TEXT,
+            integrations TEXT
+          );
+        `, (err) => {
+              if (err) {
+                console.error(tag, 'Failed to create customTokens table:', err);
+                throw err;
+              } else {
+                console.log(tag, 'CustomTokens table created or already exists.');
+              }
+            });
           });
           return Promise.resolve(true);
         }
@@ -183,11 +217,9 @@ export class DB {
       }
     };
 
-
     //txs
     this.createTransaction = async (tx: Omit<Transaction, 'id'>): Promise<number> => {
       if (typeof window !== 'undefined') {
-        // Browser environment: IndexedDB logic
         const db: IDBDatabase = await this.openIndexedDB();
         const txStore = db.transaction(this.storeName, 'readwrite').objectStore(this.storeName);
         const request = txStore.add(tx);
@@ -196,7 +228,6 @@ export class DB {
           request.onerror = () => reject(request.error);
         });
       } else {
-        // Node.js environment: SQLite logic
         return new Promise<number>((resolve, reject) => {
           this.db.run(
             'INSERT INTO transactions (txid, state) VALUES (?, ?)',
@@ -215,7 +246,6 @@ export class DB {
 
     this.getTransaction = async function (txid: string): Promise<Transaction | undefined> {
       if (typeof window !== 'undefined') {
-        // Browser environment: IndexedDB logic
         const db = await this.openIndexedDB();
         const txStore = db.transaction(this.storeName, 'readonly').objectStore(this.storeName);
         const index = txStore.index('txid');
@@ -225,7 +255,6 @@ export class DB {
           request.onerror = () => reject(request.error);
         });
       } else {
-        // Node.js environment: SQLite logic
         return new Promise((resolve, reject) => {
           this.db.get(
             'SELECT * FROM transactions WHERE txid = ?',
@@ -241,7 +270,6 @@ export class DB {
 
     this.updateTransaction = async (txid: string, newState: TransactionState): Promise<void> => {
       if (typeof window !== 'undefined') {
-        // Browser environment: IndexedDB logic
         const db = await this.openIndexedDB();
         const txStore = db.transaction(this.storeName, 'readwrite').objectStore(this.storeName);
         const index = txStore.index('txid');
@@ -261,7 +289,6 @@ export class DB {
           request.onerror = () => reject(request.error);
         });
       } else {
-        // Node.js environment: SQLite logic
         return new Promise((resolve, reject) => {
           this.db.run(
             'UPDATE transactions SET state = ? WHERE txid = ?',
@@ -277,7 +304,6 @@ export class DB {
 
     this.getAllTransactions = async function (): Promise<Transaction[]> {
       if (typeof window !== 'undefined') {
-        // Browser environment: IndexedDB logic
         const db = await this.openIndexedDB();
         const txStore = db.transaction(this.storeName, 'readonly').objectStore(this.storeName);
         const request = txStore.getAll();
@@ -286,7 +312,6 @@ export class DB {
           request.onerror = () => reject(request.error);
         });
       } else {
-        // Node.js environment: SQLite logic
         return new Promise((resolve, reject) => {
           this.db.all('SELECT * FROM transactions', [], function (err: any, rows: any[]) {
             if (err) reject(err);
@@ -298,7 +323,6 @@ export class DB {
 
     this.clearAllTransactions = async function (): Promise<void> {
       if (typeof window !== 'undefined') {
-        // Browser environment: IndexedDB logic
         const db = await this.openIndexedDB();
         const txStore = db.transaction(this.storeName, 'readwrite').objectStore(this.storeName);
         const request = txStore.clear();
@@ -307,7 +331,6 @@ export class DB {
           request.onerror = () => reject(request.error);
         });
       } else {
-        // Node.js environment: SQLite logic
         return new Promise((resolve, reject) => {
           this.db.run('DELETE FROM transactions', function (err: any) {
             if (err) reject(err);
@@ -352,14 +375,12 @@ export class DB {
       filters: { walletIds?: string[]; blockchains?: string[] } = {},
     ): Promise<any[]> => {
       if (typeof window !== 'undefined') {
-        // Browser environment: IndexedDB logic
         const db = await this.openIndexedDB();
         const pubkeyStore = db.transaction('pubkeys', 'readonly').objectStore('pubkeys');
         const allKeys = await new Promise<any[]>((resolve, reject) => {
           const request = pubkeyStore.getAll();
           request.onsuccess = () => {
             const pubkeys = request.result.map((key) => {
-              // Ensure 'networks' is parsed as an array if it's stored as a string
               key.networks =
                 typeof key.networks === 'string' ? JSON.parse(key.networks) : key.networks;
               return key;
@@ -367,13 +388,12 @@ export class DB {
             resolve(pubkeys);
           };
           request.onerror = () => {
-            // If error is due to a duplicate entry, resolve true, else rethrow or handle the error
             if (request.error && request.error.name === 'ConstraintError') {
               console.log('Duplicate pubkey, not added.');
-              resolve(true); // Resolve true indicating pubkey already exists
+              resolve(true);
             } else {
               console.error('Error adding pubkey:', request.error);
-              resolve(false); // You could resolve false or handle it differently depending on your needs
+              resolve(false);
             }
           };
         });
@@ -383,7 +403,6 @@ export class DB {
             (!filters.blockchains || filters.blockchains.includes(key.blockchain)),
         );
       } else {
-        // Node.js environment: SQLite logic
         let query = 'SELECT * FROM pubkeys WHERE 1=1';
         const params = [];
         if (filters.walletIds && filters.walletIds.length > 0) {
@@ -400,7 +419,6 @@ export class DB {
               reject(err);
             } else {
               const pubkeys = rows.map((row) => {
-                // Ensure 'networks' is parsed as an array if it's stored as a string
                 row.networks =
                   typeof row.networks === 'string' ? JSON.parse(row.networks) : row.networks;
                 return row;
@@ -415,27 +433,23 @@ export class DB {
     //balances
     this.createBalance = async (balance: any): Promise<any> => {
       if (typeof window !== 'undefined') {
-        // Browser environment: IndexedDB logic
         const db: IDBDatabase = await this.openIndexedDB();
         const txStore = db.transaction('balances', 'readwrite').objectStore('balances');
         const request = txStore.add(balance);
         return new Promise<number>((resolve, reject) => {
           request.onsuccess = () => resolve(request.result as number);
           request.onerror = () => {
-            // If error is due to a duplicate entry, resolve true, else rethrow or handle the error
             if (request.error && request.error.name === 'ConstraintError') {
               console.log('Duplicate pubkey, not added.');
-              resolve(true); // Resolve true indicating pubkey already exists
+              resolve(true);
             } else {
               console.error('Error adding pubkey:', request.error);
-              resolve(false); // You could resolve false or handle it differently depending on your needs
+              resolve(false);
             }
           };
         });
       } else {
-        // Node.js environment: SQLite logic
         return new Promise((resolve, reject) => {
-          // Check for existing balance with the same caip and context
           this.db.get(
             'SELECT * FROM balances WHERE caip = ? AND context = ?',
             [balance.caip, balance.context],
@@ -443,7 +457,6 @@ export class DB {
               if (err) {
                 reject(err);
               } else if (row) {
-                // Update existing balance
                 this.db.run(
                   'UPDATE balances SET balance = ? WHERE id = ?',
                   [balance.balance, row.id],
@@ -456,7 +469,6 @@ export class DB {
                   },
                 );
               } else {
-                // Insert new balance
                 this.db.run(
                   `INSERT INTO balances (
                 chain, identifier, decimals, type, networkId, caip, symbol, assetId, chainId, name, networkName, 
@@ -487,12 +499,10 @@ export class DB {
       }
     };
 
-
     this.getBalances = async (
       filters: { walletIds?: string[]; blockchains?: string[] } = {},
     ): Promise<any[]> => {
       if (typeof window !== 'undefined') {
-        // Browser environment: IndexedDB logic
         const db = await this.openIndexedDB();
         const balanceStore = db.transaction('balances', 'readonly').objectStore('balances');
         const allKeys = await new Promise<any[]>((resolve, reject) => {
@@ -511,7 +521,6 @@ export class DB {
             (!filters.blockchains || filters.blockchains.includes(balance.chain)),
         );
       } else {
-        // Node.js environment: SQLite logic
         let query = 'SELECT * FROM balances WHERE 1=1';
         const params = [];
         if (filters.walletIds && filters.walletIds.length > 0) {
@@ -551,6 +560,88 @@ export class DB {
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
       });
+    };
+
+    this.addCustomToken = async (token: any): Promise<any> => {
+      if (typeof window !== 'undefined') {
+        const db: IDBDatabase = await this.openIndexedDB();
+        const txStore = db.transaction('customTokens', 'readwrite').objectStore('customTokens');
+        const request = txStore.put({ ...token, caip: token.caip.toLowerCase() });
+        return new Promise((resolve, reject) => {
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      } else {
+        return new Promise((resolve, reject) => {
+          this.db.run(
+            `INSERT OR REPLACE INTO customTokens (
+              caip, chain, identifier, decimals, type, networkId, symbol, sourceList, assetId, chainId,
+              name, networkName, precision, color, icon, explorer, explorerAddressLink, explorerTxLink, integrations
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              token.caip.toLowerCase(), token.chain, token.identifier, token.decimals, token.type, token.networkId,
+              token.symbol, token.sourceList, token.assetId, token.chainId, token.name, token.networkName,
+              token.precision, token.color, token.icon, token.explorer, token.explorerAddressLink,
+              token.explorerTxLink, JSON.stringify(token.integrations)
+            ],
+            function (err) {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(this.lastID);
+              }
+            }
+          );
+        });
+      }
+    };
+
+    this.getCustomToken = async (caip: string): Promise<any | undefined> => {
+      if (typeof window !== 'undefined') {
+        const db = await this.openIndexedDB();
+        const tokenStore = db.transaction('customTokens', 'readonly').objectStore('customTokens');
+        const request = tokenStore.get(caip.toLowerCase());
+        return new Promise((resolve, reject) => {
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      } else {
+        return new Promise((resolve, reject) => {
+          this.db.get(
+            'SELECT * FROM customTokens WHERE caip = ?',
+            [caip.toLowerCase()],
+            (err, row) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(row);
+              }
+            }
+          );
+        });
+      }
+    };
+
+    this.getAllCustomTokens = async (): Promise<any[]> => {
+      if (typeof window !== 'undefined') {
+        const db = await this.openIndexedDB();
+        const tokenStore = db.transaction('customTokens', 'readonly').objectStore('customTokens');
+        const request = tokenStore.getAll();
+        return new Promise((resolve, reject) => {
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      } else {
+        return new Promise<any[]>((resolve, reject) => {
+          this.db.all('SELECT * FROM customTokens', [], (err, rows) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(rows);
+            }
+          });
+        });
+      }
     };
   }
 }

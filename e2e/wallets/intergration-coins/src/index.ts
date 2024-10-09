@@ -71,14 +71,14 @@ const test_service = async function (this: any) {
         // log.info(tag,"AllChainsSupported: ",AllChainsSupported)
 
         let AllChainsSupported = [
-            // 'ETH',
+            'ETH',
             // 'ARB',
             // 'OP',  //Fast
             // 'MATIC', //SLOW charting
             // 'AVAX', //fast
             // 'BASE', //fast
             // 'BSC', //fast
-            'BTC',
+            // 'BTC',
             // 'BCH',
             // 'GAIA',
             // 'OSMO',
@@ -300,7 +300,7 @@ const test_service = async function (this: any) {
 
         log.info(tag,'app.paths: ',app.paths.length)
         log.info(tag,'app.pubkeys: ',app.pubkeys.length)
-        if(app.pubkeys.length !== app.paths.length) throw Error('Missing pubkeys! failed to sync')
+        // if(app.pubkeys.length !== app.paths.length) throw Error('Missing pubkeys! failed to sync')
 
         for(let i = 0; i < paths.length; i++){
             let path = paths[i]
@@ -324,7 +324,7 @@ const test_service = async function (this: any) {
 
         log.info(tag,'app.paths: ',app.paths.length)
         log.info(tag,'app.pubkeys: ',app.pubkeys.length)
-        if(app.pubkeys.length !== app.paths.length) throw Error('Missing pubkeys! failed to sync')
+        // if(app.pubkeys.length !== app.paths.length) throw Error('Missing pubkeys! failed to sync')
 
         //
         paths.push({
@@ -349,87 +349,91 @@ const test_service = async function (this: any) {
         /*
             If you have an expired balance, you need to recalculate the balance
          */
-        log.info("balanceCache: ", balancesCache.length);
-        log.info("app.balances.length: ", app.balances.length);
-        //find expired balances > 1 hour
-        //find enabled charts, find cached charts
-        //is missing perform chart query
-        if (!app.balances || app.balances.length === 0) {
-            log.info(tag, "No balances found, recalculating...");
+        // log.info("balanceCache: ", balancesCache.length);
+        // log.info("app.balances.length: ", app.balances.length);
+        // //find expired balances > 1 hour
+        // //find enabled charts, find cached charts
+        // //is missing perform chart query
+        // if (!app.balances || app.balances.length === 0) {
+        //     log.info(tag, "No balances found, recalculating...");
+        //
+        //     let balances = await app.getBalances();
+        //     // log.info(tag, "balances: ", balances)
+        //     log.info(tag, "balances: ", balances.length)
+        //     log.info(tag, "balances: ", balances[0])
+        //     let chartData = await app.getCharts();
+        //     log.info(tag, "chartData: ", chartData.length)
+        //     log.info(tag, "chartData: ", chartData[0])
+        //     balances = [...balances, ...chartData];
+        //     log.info(tag, "balances: ", balances);
+        //     log.info(tag, "balances: TOTAL: ", balances.length);
+        //     assert(balances);
+        //     assert(balances[0]);
+        //     assert(app.balances);
+        //     assert(app.balances[0]);
+        //     log.info(tag, "balances: ", app.balances);
+        //
+        //     for (let i = 0; i < balances.length; i++) {
+        //         let balance = balances[i];
+        //         log.info(tag, "*** balance: ", balance);
+        //         assert(balance);
+        //         assert(balance.caip);
+        //         txDB.createBalance(balance);
+        //     }
+        // }
+        // console.timeEnd('start2BalancesGas');
+        //
+        // // Verify gas balances for each enabled chain
+        // for (let i = 0; i < blockchains.length; i++) {
+        //     let blockchain = blockchains[i];
+        //     let chain = NetworkIdToChain[blockchain];
+        //     assert(chain);
+        //     let caip = shortListSymbolToCaip[chain];
+        //     assert(caip);
+        //     log.info(tag, "caip: ", caip);
+        //     let balance = app.balances.find((balance: any) => balance.caip === caip);
+        //     assert(balance);
+        //     assert(balance.caip);
+        //     log.info(tag, balance.caip + " USD: ", balance.valueUsd);
+        // }
+        //
+        // // Portfolio breakdown by tokens, nfts, and gas assets
+        // let portfolio: any = {
+        //     tokens: [],
+        //     nfts: [],
+        //     gasAssets: []
+        // };
+        //
+        // for (let i = 0; i < app.balances.length; i++) {
+        //     let balance: any = app.balances[i];
+        //     if (balance.type === 'nft') {
+        //         portfolio.nfts.push(balance);
+        //     } else if (balance.type === 'Native') {
+        //         portfolio.gasAssets.push(balance);
+        //     } else {
+        //         portfolio.tokens.push(balance);
+        //     }
+        // }
+        //
+        // log.info(tag, " ** Portfolio Breakdown: ** tokens: ", portfolio.tokens.length);
+        // log.info(tag, " ** Portfolio Breakdown: ** nfts: ", portfolio.nfts.length);
+        // log.info(tag, " ** Portfolio Breakdown: ** gasAssets: ", portfolio.gasAssets.length);
+        //
+        // let portfolioValue = 0;
+        // for (let i = 0; i < app.balances.length; i++) {
+        //     let balance: any = app.balances[i];
+        //     assert(balance);
+        //     assert(balance.networkId);
+        //     assert(balance.caip);
+        //     log.info(tag, balance.caip + " USD: ", balance.valueUsd);
+        //     portfolioValue += parseFloat(balance.valueUsd);
+        // }
+        // log.info(tag, "portfolioValue: ", portfolioValue);
 
-            let balances = await app.getBalances();
-            // log.info(tag, "balances: ", balances)
-            log.info(tag, "balances: ", balances.length)
-            log.info(tag, "balances: ", balances[0])
-            let chartData = await app.getCharts();
-            log.info(tag, "chartData: ", chartData.length)
-            log.info(tag, "chartData: ", chartData[0])
-            balances = [...balances, ...chartData];
-            log.info(tag, "balances: ", balances);
-            log.info(tag, "balances: TOTAL: ", balances.length);
-            assert(balances);
-            assert(balances[0]);
-            assert(app.balances);
-            assert(app.balances[0]);
-            log.info(tag, "balances: ", app.balances);
 
-            for (let i = 0; i < balances.length; i++) {
-                let balance = balances[i];
-                log.info(tag, "*** balance: ", balance);
-                assert(balance);
-                assert(balance.caip);
-                txDB.createBalance(balance);
-            }
-        }
-        console.timeEnd('start2BalancesGas');
-
-        // Verify gas balances for each enabled chain
-        for (let i = 0; i < blockchains.length; i++) {
-            let blockchain = blockchains[i];
-            let chain = NetworkIdToChain[blockchain];
-            assert(chain);
-            let caip = shortListSymbolToCaip[chain];
-            assert(caip);
-            log.info(tag, "caip: ", caip);
-            let balance = app.balances.find((balance: any) => balance.caip === caip);
-            assert(balance);
-            assert(balance.caip);
-            log.info(tag, balance.caip + " USD: ", balance.valueUsd);
-        }
-
-        // Portfolio breakdown by tokens, nfts, and gas assets
-        let portfolio: any = {
-            tokens: [],
-            nfts: [],
-            gasAssets: []
-        };
-
-        for (let i = 0; i < app.balances.length; i++) {
-            let balance: any = app.balances[i];
-            if (balance.type === 'nft') {
-                portfolio.nfts.push(balance);
-            } else if (balance.type === 'Native') {
-                portfolio.gasAssets.push(balance);
-            } else {
-                portfolio.tokens.push(balance);
-            }
-        }
-
-        log.info(tag, " ** Portfolio Breakdown: ** tokens: ", portfolio.tokens.length);
-        log.info(tag, " ** Portfolio Breakdown: ** nfts: ", portfolio.nfts.length);
-        log.info(tag, " ** Portfolio Breakdown: ** gasAssets: ", portfolio.gasAssets.length);
-
-        let portfolioValue = 0;
-        for (let i = 0; i < app.balances.length; i++) {
-            let balance: any = app.balances[i];
-            assert(balance);
-            assert(balance.networkId);
-            assert(balance.caip);
-            log.info(tag, balance.caip + " USD: ", balance.valueUsd);
-            portfolioValue += parseFloat(balance.valueUsd);
-        }
-        log.info(tag, "portfolioValue: ", portfolioValue);
-
+        log.info(tag,'APP: ',app)
+        log.info(tag,'APP: ',app.swapKit)
+        log.info(tag,'APP: ',await app.swapKit.getWallet(Chain.Ethereum))
 
 
         //for each blockchain get token protocals

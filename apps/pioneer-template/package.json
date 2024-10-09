@@ -1,6 +1,6 @@
 {
   "name": "pioneer-template",
-  "version": "0.2.53",
+  "version": "0.2.62",
   "private": true,
   "scripts": {
     "dev": "next dev",

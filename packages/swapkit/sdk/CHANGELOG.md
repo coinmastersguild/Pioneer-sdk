@@ -1,5 +1,212 @@
 # @coinmasters/sdk
 
+## 3.7.70
+
+### Patch Changes
+
+- bump
+
+- Updated dependencies []:
+  - @coinmasters/wallet-evm-extensions@11.0.70
+  - @coinmasters/toolbox-cosmos@11.0.70
+  - @coinmasters/wallet-keystore@11.0.70
+  - @coinmasters/wallet-keepkey@13.0.70
+  - @coinmasters/toolbox-utxo@11.0.70
+  - @coinmasters/wallet-ledger@11.0.70
+  - @coinmasters/wallet-trezor@11.0.70
+  - @coinmasters/types@4.7.70
+  - @coinmasters/toolbox-evm@11.0.70
+  - @coinmasters/wallet-keplr@11.0.70
+  - @coinmasters/wallet-xdefi@11.0.70
+  - @coinmasters/core@11.0.70
+  - @coinmasters/api@3.7.70
+  - @coinmasters/wallet-okx@11.0.70
+  - @coinmasters/wallet-wc@11.0.70
+
+## 3.7.69
+
+### Patch Changes
+
+- bump
+
+- Updated dependencies []:
+  - @coinmasters/wallet-evm-extensions@11.0.69
+  - @coinmasters/toolbox-cosmos@11.0.69
+  - @coinmasters/wallet-keystore@11.0.69
+  - @coinmasters/wallet-keepkey@13.0.69
+  - @coinmasters/toolbox-utxo@11.0.69
+  - @coinmasters/wallet-ledger@11.0.69
+  - @coinmasters/wallet-trezor@11.0.69
+  - @coinmasters/types@4.7.69
+  - @coinmasters/toolbox-evm@11.0.69
+  - @coinmasters/wallet-keplr@11.0.69
+  - @coinmasters/wallet-xdefi@11.0.69
+  - @coinmasters/core@11.0.69
+  - @coinmasters/api@3.7.69
+  - @coinmasters/wallet-okx@11.0.69
+  - @coinmasters/wallet-wc@11.0.69
+
+## 3.7.68
+
+### Patch Changes
+
+- bump
+
+- Updated dependencies []:
+  - @coinmasters/wallet-evm-extensions@11.0.68
+  - @coinmasters/toolbox-cosmos@11.0.68
+  - @coinmasters/wallet-keystore@11.0.68
+  - @coinmasters/wallet-keepkey@13.0.68
+  - @coinmasters/toolbox-utxo@11.0.68
+  - @coinmasters/wallet-ledger@11.0.68
+  - @coinmasters/wallet-trezor@11.0.68
+  - @coinmasters/types@4.7.68
+  - @coinmasters/toolbox-evm@11.0.68
+  - @coinmasters/wallet-keplr@11.0.68
+  - @coinmasters/wallet-xdefi@11.0.68
+  - @coinmasters/core@11.0.68
+  - @coinmasters/api@3.7.68
+  - @coinmasters/wallet-okx@11.0.68
+  - @coinmasters/wallet-wc@11.0.68
+
+## 3.7.67
+
+### Patch Changes
+
+- bump
+
+- Updated dependencies []:
+  - @coinmasters/wallet-evm-extensions@11.0.67
+  - @coinmasters/toolbox-cosmos@11.0.67
+  - @coinmasters/wallet-keystore@11.0.67
+  - @coinmasters/wallet-keepkey@13.0.67
+  - @coinmasters/toolbox-utxo@11.0.67
+  - @coinmasters/wallet-ledger@11.0.67
+  - @coinmasters/wallet-trezor@11.0.67
+  - @coinmasters/types@4.7.67
+  - @coinmasters/toolbox-evm@11.0.67
+  - @coinmasters/wallet-keplr@11.0.67
+  - @coinmasters/wallet-xdefi@11.0.67
+  - @coinmasters/core@11.0.67
+  - @coinmasters/api@3.7.67
+  - @coinmasters/wallet-okx@11.0.67
+  - @coinmasters/wallet-wc@11.0.67
+
+## 3.7.66
+
+### Patch Changes
+
+- bump
+
+- Updated dependencies []:
+  - @coinmasters/wallet-evm-extensions@11.0.66
+  - @coinmasters/toolbox-cosmos@11.0.66
+  - @coinmasters/wallet-keystore@11.0.66
+  - @coinmasters/wallet-keepkey@13.0.66
+  - @coinmasters/toolbox-utxo@11.0.66
+  - @coinmasters/wallet-ledger@11.0.66
+  - @coinmasters/wallet-trezor@11.0.66
+  - @coinmasters/types@4.7.66
+  - @coinmasters/toolbox-evm@11.0.66
+  - @coinmasters/wallet-keplr@11.0.66
+  - @coinmasters/wallet-xdefi@11.0.66
+  - @coinmasters/core@11.0.66
+  - @coinmasters/api@3.7.66
+  - @coinmasters/wallet-okx@11.0.66
+  - @coinmasters/wallet-wc@11.0.66
+
+## 3.7.65
+
+### Patch Changes
+
+- bump
+
+- Updated dependencies []:
+  - @coinmasters/wallet-evm-extensions@11.0.65
+  - @coinmasters/toolbox-cosmos@11.0.65
+  - @coinmasters/wallet-keystore@11.0.65
+  - @coinmasters/wallet-keepkey@13.0.65
+  - @coinmasters/toolbox-utxo@11.0.65
+  - @coinmasters/wallet-ledger@11.0.65
+  - @coinmasters/wallet-trezor@11.0.65
+  - @coinmasters/types@4.7.65
+  - @coinmasters/toolbox-evm@11.0.65
+  - @coinmasters/wallet-keplr@11.0.65
+  - @coinmasters/wallet-xdefi@11.0.65
+  - @coinmasters/core@11.0.65
+  - @coinmasters/api@3.7.65
+  - @coinmasters/wallet-okx@11.0.65
+  - @coinmasters/wallet-wc@11.0.65
+
+## 3.7.64
+
+### Patch Changes
+
+- bump
+
+- Updated dependencies []:
+  - @coinmasters/wallet-evm-extensions@11.0.64
+  - @coinmasters/toolbox-cosmos@11.0.64
+  - @coinmasters/wallet-keystore@11.0.64
+  - @coinmasters/wallet-keepkey@13.0.64
+  - @coinmasters/toolbox-utxo@11.0.64
+  - @coinmasters/wallet-ledger@11.0.64
+  - @coinmasters/wallet-trezor@11.0.64
+  - @coinmasters/types@4.7.64
+  - @coinmasters/toolbox-evm@11.0.64
+  - @coinmasters/wallet-keplr@11.0.64
+  - @coinmasters/wallet-xdefi@11.0.64
+  - @coinmasters/core@11.0.64
+  - @coinmasters/api@3.7.64
+  - @coinmasters/wallet-okx@11.0.64
+  - @coinmasters/wallet-wc@11.0.64
+
+## 3.7.63
+
+### Patch Changes
+
+- bump
+
+- Updated dependencies []:
+  - @coinmasters/wallet-evm-extensions@11.0.63
+  - @coinmasters/toolbox-cosmos@11.0.63
+  - @coinmasters/wallet-keystore@11.0.63
+  - @coinmasters/wallet-keepkey@13.0.63
+  - @coinmasters/toolbox-utxo@11.0.63
+  - @coinmasters/wallet-ledger@11.0.63
+  - @coinmasters/wallet-trezor@11.0.63
+  - @coinmasters/types@4.7.63
+  - @coinmasters/toolbox-evm@11.0.63
+  - @coinmasters/wallet-keplr@11.0.63
+  - @coinmasters/wallet-xdefi@11.0.63
+  - @coinmasters/core@11.0.63
+  - @coinmasters/api@3.7.63
+  - @coinmasters/wallet-okx@11.0.63
+  - @coinmasters/wallet-wc@11.0.63
+
+## 3.7.62
+
+### Patch Changes
+
+- bump
+
+- Updated dependencies []:
+  - @coinmasters/wallet-evm-extensions@11.0.62
+  - @coinmasters/toolbox-cosmos@11.0.62
+  - @coinmasters/wallet-keystore@11.0.62
+  - @coinmasters/wallet-keepkey@13.0.62
+  - @coinmasters/toolbox-utxo@11.0.62
+  - @coinmasters/wallet-ledger@11.0.62
+  - @coinmasters/wallet-trezor@11.0.62
+  - @coinmasters/types@4.7.62
+  - @coinmasters/toolbox-evm@11.0.62
+  - @coinmasters/wallet-keplr@11.0.62
+  - @coinmasters/wallet-xdefi@11.0.62
+  - @coinmasters/core@11.0.62
+  - @coinmasters/api@3.7.62
+  - @coinmasters/wallet-okx@11.0.62
+  - @coinmasters/wallet-wc@11.0.62
+
 ## 3.7.61
 
 ### Patch Changes

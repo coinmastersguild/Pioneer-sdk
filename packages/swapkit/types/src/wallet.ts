@@ -106,7 +106,6 @@ export const availableChainsByWallet: any = {
   [WalletOption.XDEFI]: [
     Chain.Arbitrum,
     Chain.Avalanche,
-    Chain.Binance,
     Chain.BinanceSmartChain,
     Chain.Bitcoin,
     Chain.BitcoinCash,

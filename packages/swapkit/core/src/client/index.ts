@@ -85,17 +85,11 @@ export class SwapKitCore<T = ''> {
   public connectedChains: Wallet = getEmptyWalletStructure();
   public connectedWallets: WalletMethods = getEmptyWalletStructure();
   public readonly stagenet: boolean = false;
+  public keepkeySdk: any;
 
   constructor({ stagenet }: { stagenet?: boolean } | undefined = {}) {
     this.stagenet = !!stagenet;
   }
-  // getAddress = (chain: Chain, addressInfo?: any) => {
-  //   const address = this.connectedChains[chain]?.address;
-  //   if (!address) {
-  //     throw new Error(`Not connected to chain: ${chain}`);
-  //   }
-  //   return address;
-  // };
   getAddress = async (chain: any, addressInfo?: any) => {
     let tag = TAG + ' | getAddress | ';
     try {
@@ -489,6 +483,7 @@ export class SwapKitCore<T = ''> {
       //console.log(tag, 'CORE transferParams: ', transferParams);
       return await walletInstance.transfer(transferParams);
     } catch (error) {
+      //TODO submit error
       //@ts-ignore
       throw new SwapKitError('core_transfer_transaction_error', error);
     }
@@ -804,6 +799,7 @@ export class SwapKitCore<T = ''> {
   extend = ({ wallets, config, apis = {}, rpcUrls = {} }: ExtendParams<T>) => {
     try {
       wallets.forEach((wallet) => {
+        console.log('extend wallet', wallet);
         // @ts-expect-error - this is fine as we are extending the class
         this[wallet.connectMethodName] = wallet.connect({
           addChain: this.#addConnectedChain,
@@ -917,56 +913,6 @@ export class SwapKitCore<T = ''> {
       throw error;
     }
   };
-
-  // estimateMaxSendableAmount = async ({
-  //   chain,
-  //   params,
-  // }: {
-  //   chain: Chain;
-  //   params: any;
-  //   // params: { from: string; recipient: string; assetValue: AssetValue };
-  // }) => {
-  //   const walletMethods = this.getWallet<typeof chain>(chain);
-  //
-  //   switch (chain) {
-  //     case Chain.Arbitrum:
-  //     case Chain.Avalanche:
-  //     case Chain.BinanceSmartChain:
-  //     case Chain.Base:
-  //     case Chain.Ethereum:
-  //     case Chain.Optimism:
-  //     case Chain.Polygon: {
-  //       const { estimateMaxSendableAmount } = await import('@coinmasters/toolbox-evm');
-  //       return estimateMaxSendableAmount({
-  //         ...params,
-  //         toolbox: walletMethods as EVMToolbox,
-  //       });
-  //     }
-  //
-  //     case Chain.Bitcoin:
-  //     case Chain.BitcoinCash:
-  //     case Chain.Dogecoin:
-  //     case Chain.Dash:
-  //     case Chain.Zcash:
-  //     case Chain.Litecoin:
-  //       return (walletMethods as UTXOToolbox).estimateMaxSendableAmount(params);
-  //
-  //     case Chain.Binance:
-  //     case Chain.Mayachain:
-  //     case Chain.THORChain:
-  //     case Chain.Cosmos: {
-  //       const { estimateMaxSendableAmount } = await import('@coinmasters/toolbox-cosmos');
-  //       return estimateMaxSendableAmount({
-  //         ...params,
-  //         toolbox: walletMethods as CosmosLikeToolbox,
-  //       });
-  //     }
-  //
-  //     default:
-  //       throw new SwapKitError('core_estimated_max_spendable_chain_not_supported');
-  //   }
-  // };
-
   /**
    * Wallet connection methods
    */
@@ -1023,9 +969,11 @@ export class SwapKitCore<T = ''> {
     return chainAddressData;
   };
 
-  #addConnectedChain = ({ chain, wallet, walletMethods }: AddChainWalletParams) => {
+  #addConnectedChain = ({ chain, wallet, walletMethods, keepkeySdk }: AddChainWalletParams) => {
+    console.log('addConnectedChain: ', chain, wallet, walletMethods, keepkeySdk)
     this.connectedChains[chain] = wallet;
     this.connectedWallets[chain] = walletMethods;
+    if (keepkeySdk) this.keepkeySdk = keepkeySdk;
   };
 
   #approve = async <T = string>({

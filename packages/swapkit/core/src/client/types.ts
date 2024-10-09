@@ -93,7 +93,6 @@ export type WalletMethods = {
   //@TODO fixme (everything worked with this missing? cant be that important)
   [Chain.Base]: EVMWallet<any> | null;
   [Chain.BinanceSmartChain]: EVMWallet<typeof BSCToolbox> | null;
-  [Chain.Binance]: CosmosBasedWallet<typeof BinanceToolbox> | null;
   [Chain.BitcoinCash]: UTXOWallet<typeof BCHToolbox> | null;
   [Chain.Bitcoin]: UTXOWallet<typeof BTCToolbox> | null;
   [Chain.Cosmos]: CosmosBasedWallet<typeof GaiaToolbox> | null;
